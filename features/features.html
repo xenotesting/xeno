@@ -12,48 +12,58 @@
       font-family: 'Segoe UI', sans-serif;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      padding: 10px 20px;
-      background-color: #111;
+    /* Top-left logo */
+    .logo {
+      position: absolute;
+      top: 15px;
+      left: 20px;
     }
 
-    .header img {
+    .logo img {
       height: 50px;
-      margin-right: 30px;
     }
 
-    .nav {
+    /* Centered button container */
+    .center-buttons {
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       gap: 20px;
-      flex-wrap: wrap;
     }
 
-    .nav a {
+    /* Button styling */
+    .nav-button {
+      background: none;
+      border: 2px solid white;
       color: white;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
       text-decoration: none;
-      font-weight: bold;
-      padding: 6px 12px;
-      border: 2px solid transparent;
-      transition: 0.2s;
+      transition: 0.2s ease-in-out;
     }
 
-    .nav a:hover {
-      border-bottom: 2px solid #fff;
+    .nav-button:hover {
+      background: white;
+      color: black;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <img src="/images/alt-logo.png" alt="Xeno Alt Logo" />
-    <div class="nav">
-      <a href="index.html">Home</a>
-      <a href="quote.html">Quote Generator</a>
-      <a href="emulators.html">Emulators</a>
-      <a href="games.html">Games</a>
-      <a href="contact.html">Contact</a>
-    </div>
+  <!-- Top-left logo -->
+  <div class="logo">
+    <img src="/images/alt-logo.png" alt="Xeno Logo" />
+  </div>
+
+  <!-- Centered buttons -->
+  <div class="center-buttons">
+    <a class="nav-button" href="/home">Home</a>
+    <a class="nav-button" href="/player">Music Player</a>
+    <a class="nav-button" href="/about">About</a>
+    <a class="nav-button" href="/games">Games</a>
+    <a class="nav-button" href="/contact">Contact</a>
   </div>
 </body>
 </html>
