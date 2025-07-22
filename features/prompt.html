@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Xeno v2.0 - Command Prompt</title>
   <style>
     body {
       background-color: black;
-      color: lime;
+      color: white;
       font-family: monospace;
       padding: 10px;
       margin: 0;
@@ -15,10 +15,11 @@
     }
     .line {
       margin: 5px 0;
+      white-space: pre-wrap;
     }
     input {
       background: black;
-      color: lime;
+      color: inherit;
       border: none;
       outline: none;
       font-family: monospace;
@@ -27,6 +28,9 @@
     }
     #output {
       white-space: pre-wrap;
+      max-height: 80vh;
+      overflow-y: auto;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -52,11 +56,22 @@
 
     function handleCommand(cmd) {
       const args = cmd.trim().split(' ');
-      const baseCmd = args[0];
+      const baseCmd = args[0].toLowerCase();
+
+      const colors = {
+        0: '#000000', 1: '#0000AA', 2: '#00AA00', 3: '#00AAAA',
+        4: '#AA0000', 5: '#AA00AA', 6: '#AA5500', 7: '#AAAAAA',
+        8: '#555555', 9: '#5555FF', A: '#55FF55', B: '#55FFFF',
+        C: '#FF5555', D: '#FF55FF', E: '#FFFF55', F: '#FFFFFF'
+      };
 
       switch (baseCmd) {
         case 'make':
           if (args[1] === 'cookie') {
+            if (document.getElementById('cookieBtn')) {
+              appendLine("Cookie button already exists.");
+              break;
+            }
             const btn = document.createElement('button');
             btn.textContent = '🍪 Cookie';
             btn.id = 'cookieBtn';
@@ -89,6 +104,69 @@
           location.reload();
           break;
 
+        case 'help':
+          appendLine(
+            "Available commands:\n" +
+            "make cookie – Creates a cookie button\n" +
+            "delete cookie – Deletes the cookie button\n" +
+            "info – Shows Xeno version\n" +
+            "reload – Reloads the page\n" +
+            "ver – Prints fake version info\n" +
+            "echo [text] – Repeats what you type\n" +
+            "cls – Clears the screen\n" +
+            "time – Shows the current time\n" +
+            "date – Shows today's date\n" +
+            "whoami – Displays fake username\n" +
+            "color – Change background/text color (e.g. color 1F)\n"
+          );
+          break;
+
+        case 'ver':
+          appendLine("Microsoft Windows [Version Xeno-2025.07.22]");
+          break;
+
+        case 'echo':
+          appendLine(cmd.slice(5));
+          break;
+
+        case 'cls':
+          output.innerHTML = '';
+          break;
+
+        case 'time':
+          appendLine("Current time: " + new Date().toLocaleTimeString());
+          break;
+
+        case 'date':
+          appendLine("Today’s date: " + new Date().toLocaleDateString());
+          break;
+
+        case 'whoami':
+          appendLine("xeno_user");
+          break;
+
+        case 'color':
+          if (args.length === 1) {
+            // No args = reset
+            document.body.style.backgroundColor = '#000000';
+            document.body.style.color = '#FFFFFF';
+            appendLine("Color reset to default.");
+          } else if (args[1].length === 1 || args[1].length === 2) {
+            const bgCode = args[1].length === 2 ? args[1][0].toUpperCase() : null;
+            const fgCode = args[1].length === 2 ? args[1][1].toUpperCase() : args[1][0].toUpperCase();
+
+            if ((bgCode === null || colors[bgCode]) && colors[fgCode]) {
+              if (bgCode) document.body.style.backgroundColor = colors[bgCode];
+              document.body.style.color = colors[fgCode];
+              appendLine(`Color set to ${args[1].toUpperCase()}`);
+            } else {
+              appendLine("Invalid color code.");
+            }
+          } else {
+            appendLine("Usage: color [hex] (e.g. color 0A)");
+          }
+          break;
+
         default:
           appendLine(`'${cmd}' is not recognized as a command.`);
       }
@@ -97,6 +175,7 @@
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const cmd = input.value;
+        if (!cmd.trim()) return;
         appendLine('> ' + cmd);
         handleCommand(cmd);
         history.push(cmd);
