@@ -157,19 +157,12 @@
         isDragging = false;
       });
 
-     
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const loadingScreen = document.getElementById('loading-screen');
-          if (loadingScreen) {
-            loadingScreen.style.display = 'none';
-      }
-    }, 15000); // 15 seconds
-        
-  });
+  window.onload = function () {
+    setTimeout(() => {
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("desktop").style.display = "block";
+    }, 15000);
+  };
 </script>
-
-    }
-  </script>
 </body>
 </html>
