@@ -113,50 +113,52 @@
   </div>
 
   <script>
-    let zIndexCounter = 1;
+  let zIndexCounter = 1;
 
-    function openWindow(title, contentHTML) {
-      const win = document.createElement("div");
-      win.className = "window";
-      win.style.top = "100px";
-      win.style.left = "100px";
+  function openWindow(title, contentHTML) {
+    const win = document.createElement("div");
+    win.className = "window";
+    win.style.top = "100px";
+    win.style.left = "100px";
+    win.style.zIndex = zIndexCounter++;
+
+    win.innerHTML = `
+      <div class="titlebar">
+        <span>${title}</span>
+        <span class="close" onclick="this.closest('.window').remove()">×</span>
+      </div>
+      <div class="content">${contentHTML}</div>
+    `;
+
+    document.body.appendChild(win);
+    makeDraggable(win);
+  }
+
+  function makeDraggable(win) {
+    const titlebar = win.querySelector('.titlebar');
+    let offsetX, offsetY;
+    let isDragging = false;
+
+    titlebar.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      offsetX = e.clientX - win.offsetLeft;
+      offsetY = e.clientY - win.offsetTop;
       win.style.zIndex = zIndexCounter++;
+    });
 
-      win.innerHTML = `
-        <div class="titlebar">
-          <span>${title}</span>
-          <span class="close" onclick="this.closest('.window').remove()">×</span>
-        </div>
-        <div class="content">${contentHTML}</div>
-      `;
+    window.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        win.style.left = `${e.clientX - offsetX}px`;
+        win.style.top = `${e.clientY - offsetY}px`;
+      }
+    });
 
-      document.body.appendChild(win);
-      makeDraggable(win);
-    }
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  }
 
-    function makeDraggable(win) {
-      const titlebar = win.querySelector('.titlebar');
-      let offsetX, offsetY;
-      let isDragging = false;
-
-      titlebar.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.clientX - win.offsetLeft;
-        offsetY = e.clientY - win.offsetTop;
-        win.style.zIndex = zIndexCounter++;
-      });
-
-      window.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-          win.style.left = `${e.clientX - offsetX}px`;
-          win.style.top = `${e.clientY - offsetY}px`;
-        }
-      });
-
-      window.addEventListener('mouseup', () => {
-        isDragging = false;
-      });
-
+    
   window.onload = function () {
     setTimeout(() => {
       document.getElementById("loading").style.display = "none";
