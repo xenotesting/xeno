@@ -2,109 +2,132 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Xeno v2.0 - Command Prompt</title>
   <style>
     body {
+      margin: 0;
       background-color: black;
       color: white;
       font-family: monospace;
       padding: 10px;
-      margin: 0;
-      overflow-x: hidden;
     }
-    .line {
-      margin: 5px 0;
+    #terminal {
       white-space: pre-wrap;
-    }
-    input {
-      background: black;
-      color: inherit;
-      border: none;
       outline: none;
-      font-family: monospace;
-      font-size: 1em;
-      width: 90%;
     }
-    #output {
-      white-space: pre-wrap;
-      max-height: 80vh;
-      overflow-y: auto;
-      margin-bottom: 10px;
+    .input-line {
+      display: inline;
     }
   </style>
 </head>
 <body>
-  <div id="output"></div>
-  <div class="line">
-    <span>&gt;</span> <input type="text" id="input" autofocus autocomplete="off" />
-  </div>
+  <div id="terminal" tabindex="0"></div>
 
   <script>
-    const input = document.getElementById('input');
-    const output = document.getElementById('output');
-    let history = [];
-    let historyIndex = -1;
+    const terminal = document.getElementById("terminal");
+    const version = "Xeno v2.0.13.521";
+    let input = "";
+    let commandHistory = [];
+    let historyIndex = 0;
 
-    function appendLine(text) {
-      const line = document.createElement('div');
-      line.className = 'line';
-      line.textContent = text;
-      output.appendChild(line);
-      window.scrollTo(0, document.body.scrollHeight);
+    const colors = {
+      "0": "black",
+      "1": "blue",
+      "2": "green",
+      "3": "cyan",
+      "4": "red",
+      "5": "purple",
+      "6": "yellow",
+      "7": "lightgray",
+      "8": "gray",
+      "9": "lightblue",
+      "A": "lightgreen",
+      "B": "lightcyan",
+      "C": "lightred",
+      "D": "lightpurple",
+      "E": "lightyellow",
+      "F": "white",
+    };
+
+    function appendLine(text = "") {
+      terminal.innerHTML += text + "\n";
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function prompt() {
+      appendLine("> " + input);
+      handleCommand(input.trim());
+      input = "";
     }
 
     function handleCommand(cmd) {
-      const args = cmd.trim().split(' ');
-      const baseCmd = args[0].toLowerCase();
+      commandHistory.push(cmd);
+      historyIndex = commandHistory.length;
 
-      const colors = {
-        0: '#000000', 1: '#0000AA', 2: '#00AA00', 3: '#00AAAA',
-        4: '#AA0000', 5: '#AA00AA', 6: '#AA5500', 7: '#AAAAAA',
-        8: '#555555', 9: '#5555FF', A: '#55FF55', B: '#55FFFF',
-        C: '#FF5555', D: '#FF55FF', E: '#FFFF55', F: '#FFFFFF'
-      };
+      const [base, ...args] = cmd.split(" ");
+      const argStr = args.join(" ");
 
-      switch (baseCmd) {
-        case 'make':
-          if (args[1] === 'cookie') {
-            if (document.getElementById('cookieBtn')) {
-              appendLine("Cookie button already exists.");
-              break;
-            }
-            const btn = document.createElement('button');
-            btn.textContent = '🍪 Cookie';
-            btn.id = 'cookieBtn';
-            btn.style.position = 'absolute';
-            btn.style.left = '50%';
-            btn.style.top = '50%';
-            btn.style.transform = 'translate(-50%, -50%)';
-            document.body.appendChild(btn);
-            appendLine("Created a cookie button.");
-          }
+      switch (base.toLowerCase()) {
+        case "make":
+          if (argStr === "cookie") createCookie();
+          else appendLine("Unknown argument for make.");
           break;
 
-        case 'delete':
-          if (args[1] === 'cookie') {
-            const btn = document.getElementById('cookieBtn');
-            if (btn) {
-              btn.remove();
-              appendLine("Cookie button deleted.");
-            } else {
-              appendLine("No cookie to delete.");
-            }
-          }
+        case "delete":
+          if (argStr === "cookie") deleteCookie();
+          else appendLine("Unknown argument for delete.");
           break;
 
-        case 'info':
-          appendLine("Xeno v2.0.0.0");
+        case "info":
+          appendLine(version);
           break;
 
-        case 'reset':
+        case "reset":
           location.reload();
           break;
 
-        case 'help':
+        case "clear":
+          terminal.innerHTML = "";
+          break;
+
+        case "ver":
+          appendLine("Xeno Terminal [Version 10.0.12345.1000]");
+          break;
+
+        case "echo":
+          appendLine(argStr);
+          break;
+
+        case "time":
+          appendLine("Time: " + new Date().toLocaleTimeString());
+          break;
+
+        case "date":
+          appendLine("Date: " + new Date().toLocaleDateString());
+          break;
+
+        case "whoami":
+          appendLine("User: Guest");
+          break;
+
+        case "color":
+          if (/^[0-9A-Fa-f]{2}$/.test(argStr)) {
+            document.body.style.backgroundColor = colors[argStr[0].toUpperCase()];
+            document.body.style.color = colors[argStr[1].toUpperCase()];
+          } else {
+            appendLine("Usage: color <2-digit hex> (e.g., color 1F)");
+          }
+          break;
+
+        case "colorhelp":
+          appendLine("Color codes (first = background, second = text):");
+          for (const [code, name] of Object.entries(colors)) {
+            appendLine(`${code} = ${name}`);
+          }
+          appendLine("Example: color 1F → Blue background, white text");
+          break;
+
+        case "help":
           appendLine(
             "Available commands:\n" +
             "make cookie – Creates a cookie button\n" +
@@ -117,85 +140,79 @@
             "time – Shows the current time\n" +
             "date – Shows today's date\n" +
             "whoami – Displays fake username\n" +
-            "color – Change background/text color (e.g. color 1F)\n"
+            "color <code> – Change terminal colors (e.g. color 1F)\n" +
+            "colorHelp – Shows all color options\n"
           );
           break;
 
-        case 'ver':
-          appendLine("Microsoft Windows [Version Xeno-2025.07.22]");
-          break;
-
-        case 'echo':
-          appendLine(cmd.slice(5));
-          break;
-
-        case 'clear':
-          output.innerHTML = '';
-          break;
-
-        case 'time':
-          appendLine("Current time: " + new Date().toLocaleTimeString());
-          break;
-
-        case 'date':
-          appendLine("Today’s date: " + new Date().toLocaleDateString());
-          break;
-
-        case 'whoami':
-          appendLine("xeno_user");
-          break;
-
-        case 'color':
-          if (args.length === 1) {
-            // No args = reset
-            document.body.style.backgroundColor = '#000000';
-            document.body.style.color = '#FFFFFF';
-            appendLine("Color reset to default.");
-          } else if (args[1].length === 1 || args[1].length === 2) {
-            const bgCode = args[1].length === 2 ? args[1][0].toUpperCase() : null;
-            const fgCode = args[1].length === 2 ? args[1][1].toUpperCase() : args[1][0].toUpperCase();
-
-            if ((bgCode === null || colors[bgCode]) && colors[fgCode]) {
-              if (bgCode) document.body.style.backgroundColor = colors[bgCode];
-              document.body.style.color = colors[fgCode];
-              appendLine(`Color set to ${args[1].toUpperCase()}`);
-            } else {
-              appendLine("Invalid color code.");
-            }
-          } else {
-            appendLine("Usage: color [hex] (e.g. color 0A)");
-          }
-          break;
-
         default:
-          appendLine(`'${cmd}' is not recognized as a command.`);
+          if (cmd !== "") appendLine(`'${cmd}' is not recognized as a command.`);
       }
     }
 
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const cmd = input.value;
-        if (!cmd.trim()) return;
-        appendLine('> ' + cmd);
-        handleCommand(cmd);
-        history.push(cmd);
-        historyIndex = history.length;
-        input.value = '';
-      } else if (e.key === 'ArrowUp') {
+    function createCookie() {
+      if (!document.getElementById("cookieBtn")) {
+        const btn = document.createElement("button");
+        btn.id = "cookieBtn";
+        btn.innerText = "🍪 Cookie!";
+        btn.style.position = "absolute";
+        btn.style.top = "50%";
+        btn.style.left = "50%";
+        btn.style.transform = "translate(-50%, -50%)";
+        document.body.appendChild(btn);
+        appendLine("Cookie made.");
+      } else {
+        appendLine("Cookie already exists.");
+      }
+    }
+
+    function deleteCookie() {
+      const btn = document.getElementById("cookieBtn");
+      if (btn) {
+        btn.remove();
+        appendLine("Cookie deleted.");
+      } else {
+        appendLine("No cookie found.");
+      }
+    }
+
+    terminal.addEventListener("keydown", (e) => {
+      e.preventDefault();
+
+      if (e.key === "Backspace") {
+        input = input.slice(0, -1);
+        redrawInput();
+      } else if (e.key === "Enter") {
+        prompt();
+      } else if (e.key === "ArrowUp") {
         if (historyIndex > 0) {
           historyIndex--;
-          input.value = history[historyIndex];
+          input = commandHistory[historyIndex];
+          redrawInput();
         }
-      } else if (e.key === 'ArrowDown') {
-        if (historyIndex < history.length - 1) {
+      } else if (e.key === "ArrowDown") {
+        if (historyIndex < commandHistory.length - 1) {
           historyIndex++;
-          input.value = history[historyIndex];
+          input = commandHistory[historyIndex];
         } else {
-          historyIndex = history.length;
-          input.value = '';
+          input = "";
         }
+        redrawInput();
+      } else if (e.key.length === 1) {
+        input += e.key;
+        redrawInput();
       }
     });
+
+    function redrawInput() {
+      const lines = terminal.innerHTML.split("\n");
+      lines[lines.length - 1] = "> " + input;
+      terminal.innerHTML = lines.join("\n");
+    }
+
+    appendLine("Xeno Prompt - Type 'help' for a list of commands");
+    appendLine("> ");
+    terminal.focus();
   </script>
 </body>
 </html>
