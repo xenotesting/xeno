@@ -25,6 +25,21 @@
       align-items: center;
       padding: 0 10px;
     }
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      color: white;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: monospace;
+      font-size: 24px;
+    }
     .window {
       position: absolute;
       width: 300px;
@@ -82,6 +97,11 @@
   </style>
 </head>
 <body>
+  <div id="loading-screen">
+  <img src="your-spinner.gif" alt="Loading spinner" />
+  <p>Installing...</p>
+</div>
+  
   <div id="desktop">
     <div class="icon" onclick="openWindow('Example App', 'This is an example window.')">
       <img src="https://cdn-icons-png.flaticon.com/512/168/168881.png">
@@ -136,6 +156,19 @@
       window.addEventListener('mouseup', () => {
         isDragging = false;
       });
+
+     
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+      }
+    }, 15000); // 15 seconds
+        
+  });
+</script>
+
     }
   </script>
 </body>
