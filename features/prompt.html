@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Xeno v2.0 - Command Prompt</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+    }
+
+    #terminal {
+      padding: 10px;
+    }
+
+    #terminal-input {
+      width: 100%;
+      background: black;
+      color: lime;
+      border: none;
+      outline: none;
+      font-family: monospace;
+    }
+
+    #cookie {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      z-index: 9998;
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal">
+    <span>&gt;</span> <input id="terminal-input" autocomplete="off" placeholder="Type a command..." />
+  </div>
+
+  <script>
+    const input = document.getElementById('terminal-input');
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        const command = input.value.trim().toLowerCase();
+        input.value = '';
+        handleCommand(command);
+      }
+    });
+
+    function handleCommand(command) {
+      switch (command) {
+        case 'make cookie':
+          if (!document.getElementById('cookie')) {
+            const btn = document.createElement('button');
+            btn.innerText = '🍪';
+            btn.id = 'cookie';
+            btn.onclick = () => alert('You clicked the cookie!');
+            document.body.appendChild(btn);
+          }
+          break;
+
+        case 'delete cookie':
+          const cookie = document.getElementById('cookie');
+          if (cookie) cookie.remove();
+          break;
+
+        case 'info':
+          alert('Xeno v2.0.13.521');
+          break;
+
+        case 'reload':
+          location.reload();
+          break;
+
+        default:
+          alert(`Unknown command: ${command}`);
+      }
+    }
+  </script>
+</body>
+</html>
