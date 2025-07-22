@@ -1,218 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Xeno v2.0 - Command Prompt</title>
   <style>
     body {
-      margin: 0;
       background-color: black;
       color: white;
       font-family: monospace;
-      padding: 10px;
+      padding: 20px;
     }
-    #terminal {
+    #console {
       white-space: pre-wrap;
-      outline: none;
     }
-    .input-line {
+    #inputLine {
       display: inline;
+    }
+    input {
+      background: black;
+      color: white;
+      border: none;
+      outline: none;
+      font-family: monospace;
+      font-size: 1em;
+      width: 80%;
     }
   </style>
 </head>
 <body>
-  <div id="terminal" tabindex="0"></div>
+  <div id="console">Xeno Command Prompt [Version 7]\nType "help" for a list of commands.\n</div>
+  <div id="inputLine">> <input type="text" id="commandInput" autofocus /></div>
 
   <script>
-    const terminal = document.getElementById("terminal");
-    const version = "Xeno v2.0.13.521";
-    let input = "";
+    const commandInput = document.getElementById('commandInput');
+    const consoleDiv = document.getElementById('console');
     let commandHistory = [];
-    let historyIndex = 0;
+    let historyIndex = -1;
 
-    const colors = {
-      "0": "black",
-      "1": "blue",
-      "2": "green",
-      "3": "cyan",
-      "4": "red",
-      "5": "purple",
-      "6": "yellow",
-      "7": "lightgray",
-      "8": "gray",
-      "9": "lightblue",
-      "A": "lightgreen",
-      "B": "lightcyan",
-      "C": "lightred",
-      "D": "lightpurple",
-      "E": "lightyellow",
-      "F": "white",
+    function printOutput(text) {
+      consoleDiv.innerText += text + '\n';
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    const commands = {
+      "make cookie": () => {
+        if (!document.getElementById("cookieBtn")) {
+          const btn = document.createElement("button");
+          btn.id = "cookieBtn";
+          btn.innerText = "🍪 Cookie";
+          btn.style.position = "fixed";
+          btn.style.top = "50%";
+          btn.style.left = "50%";
+          btn.style.transform = "translate(-50%, -50%)";
+          btn.onclick = () => alert("Yum!");
+          document.body.appendChild(btn);
+          printOutput("Cookie created.");
+        } else {
+          printOutput("Cookie already exists.");
+        }
+      },
+      "delete cookie": () => {
+        const btn = document.getElementById("cookieBtn");
+        if (btn) {
+          btn.remove();
+          printOutput("Cookie deleted.");
+        } else {
+          printOutput("No cookie to delete.");
+        }
+      },
+      "info": () => {
+        printOutput("Xeno v2.0.13.521");
+      },
+      "reset": () => {
+        location.reload();
+      },
+      "clear": () => {
+        consoleDiv.innerText = "";
+      },
+      "help": () => {
+        printOutput(`Available commands:
+  make cookie - Create a cookie button
+  delete cookie - Delete the cookie button
+  info - Show version info
+  reset - Reload the page
+  clear - Clear the console
+  color [color] - Change console text color
+  colorHelp - List available colors`);
+      },
+      "colorHelp": () => {
+        printOutput(`Available colors:
+  red, green, blue, yellow, cyan, magenta, white, black`);
+      },
+      "color": (args) => {
+        const color = args[1];
+        const validColors = ["red", "green", "blue", "yellow", "cyan", "magenta", "white", "black"];
+        if (validColors.includes(color)) {
+          document.body.style.color = color;
+          commandInput.style.color = color;
+          printOutput(`Color changed to ${color}.`);
+        } else {
+          printOutput("Invalid color. Type 'colorHelp' for a list of colors.");
+        }
+      },
+      // 🔒 secret commandz
+      "loadOS": () => {
+        printOutput("Loading operating system... this may take a bit depending on memory");
+        setTimeout(() => {
+          window.location.href = "os.html";
+        }, 1000);
+      }
     };
 
-    function appendLine(text = "") {
-      terminal.innerHTML += text + "\n";
-      terminal.scrollTop = terminal.scrollHeight;
-    }
+    commandInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const input = commandInput.value.trim();
+        consoleDiv.innerText += "> " + input + "\n";
+        commandHistory.unshift(input);
+        historyIndex = -1;
 
-    function prompt() {
-      appendLine("> " + input);
-      handleCommand(input.trim());
-      input = "";
-    }
+        const args = input.split(" ");
+        const command = args[0];
+        if (commands[command]) {
+          commands[command](args);
+        } else {
+          printOutput(`'${input}' is not recognized as a command.`);
+        }
 
-    function handleCommand(cmd) {
-      commandHistory.push(cmd);
-      historyIndex = commandHistory.length;
-
-      const [base, ...args] = cmd.split(" ");
-      const argStr = args.join(" ");
-
-      switch (base.toLowerCase()) {
-        case "make":
-          if (argStr === "cookie") createCookie();
-          else appendLine("Unknown argument for make.");
-          break;
-
-        case "delete":
-          if (argStr === "cookie") deleteCookie();
-          else appendLine("Unknown argument for delete.");
-          break;
-
-        case "info":
-          appendLine(version);
-          break;
-
-        case "reset":
-          location.reload();
-          break;
-
-        case "clear":
-          terminal.innerHTML = "";
-          break;
-
-        case "ver":
-          appendLine("Xeno Terminal [V6]");
-          break;
-
-        case "echo":
-          appendLine(argStr);
-          break;
-
-        case "time":
-          appendLine("Time: " + new Date().toLocaleTimeString());
-          break;
-
-        case "date":
-          appendLine("Date: " + new Date().toLocaleDateString());
-          break;
-
-        case "whoami":
-          appendLine("User: Guest");
-          break;
-
-        case "color":
-          if (/^[0-9A-Fa-f]{2}$/.test(argStr)) {
-            document.body.style.backgroundColor = colors[argStr[0].toUpperCase()];
-            document.body.style.color = colors[argStr[1].toUpperCase()];
-          } else {
-            appendLine("Usage: color <2-digit hex> (e.g., color 1F)");
-          }
-          break;
-
-        case "colorhelp":
-          appendLine("Color codes (first = background, second = text):");
-          for (const [code, name] of Object.entries(colors)) {
-            appendLine(`${code} = ${name}`);
-          }
-          appendLine("Example: color 1F → Blue background, white text");
-          break;
-
-        case "help":
-          appendLine(
-            "Available commands:\n" +            
-            "info – Shows current Xeno version\n" +
-            "reset – Reloads the page\n" +
-            "ver – Prints prompt version info\n" +
-            "echo [text] – Repeats what you type\n" +
-            "clear – Clears the screen\n" +
-            "time – Shows the current time\n" +
-            "date – Shows today's date\n" +
-            "whoami – Displays fake username\n" +
-            "color <code> – Change terminal colors (e.g. color 1F)\n" +
-            "colorHelp – Shows all color options\n" +
-            <br>
-            "There are secret commands you can find!\n"
-          );
-          break;
-
-        default:
-          if (cmd !== "") appendLine(`'${cmd}' is not recognized as a command.`);
-      }
-    }
-
-    function createCookie() {
-      if (!document.getElementById("cookieBtn")) {
-        const btn = document.createElement("button");
-        btn.id = "cookieBtn";
-        btn.innerText = "🍪 Cookie!";
-        btn.style.position = "absolute";
-        btn.style.top = "50%";
-        btn.style.left = "50%";
-        btn.style.transform = "translate(-50%, -50%)";
-        document.body.appendChild(btn);
-        appendLine("Cookie made.");
-      } else {
-        appendLine("Cookie already exists.");
-      }
-    }
-
-    function deleteCookie() {
-      const btn = document.getElementById("cookieBtn");
-      if (btn) {
-        btn.remove();
-        appendLine("Cookie deleted.");
-      } else {
-        appendLine("No cookie found.");
-      }
-    }
-
-    terminal.addEventListener("keydown", (e) => {
-      e.preventDefault();
-
-      if (e.key === "Backspace") {
-        input = input.slice(0, -1);
-        redrawInput();
-      } else if (e.key === "Enter") {
-        prompt();
+        commandInput.value = "";
       } else if (e.key === "ArrowUp") {
-        if (historyIndex > 0) {
-          historyIndex--;
-          input = commandHistory[historyIndex];
-          redrawInput();
+        if (commandHistory.length > 0 && historyIndex < commandHistory.length - 1) {
+          historyIndex++;
+          commandInput.value = commandHistory[historyIndex];
         }
       } else if (e.key === "ArrowDown") {
-        if (historyIndex < commandHistory.length - 1) {
-          historyIndex++;
-          input = commandHistory[historyIndex];
+        if (historyIndex > 0) {
+          historyIndex--;
+          commandInput.value = commandHistory[historyIndex];
         } else {
-          input = "";
+          commandInput.value = "";
+          historyIndex = -1;
         }
-        redrawInput();
-      } else if (e.key.length === 1) {
-        input += e.key;
-        redrawInput();
       }
     });
-
-    function redrawInput() {
-      const lines = terminal.innerHTML.split("\n");
-      lines[lines.length - 1] = "> " + input;
-      terminal.innerHTML = lines.join("\n");
-    }
-
-    appendLine("Xeno Prompt - Type 'help' for a list of commands");
-    appendLine("> ");
-    terminal.focus();
   </script>
 </body>
 </html>
