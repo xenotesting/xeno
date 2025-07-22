@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+  <html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Xeno v2.0 - Quote Generator</title>
+  <style>
+
+  @font-face {
+    font-family: "Black Mango";
+    src:
+      url("fonts/black-mango-regular.woff2") format("woff2"),
+      url("fonts/black-mango-regular.woff") format("woff"),
+      url("fonts/black-mango-regular.otf") format("opentype"),
+      url("fonts/black-mango-regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  body {
+    background-color: #000;
+    color: white;
+    font-family: Arial, sans-serif; /* Default font for body */
+    margin: 0;
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  /* Glowing title with Black Mango font */
+  .glow {
+    font-family: "Black Mango", sans-serif;
+    font-size: 4rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow:
+      0 0 5px #0ff,
+      0 0 10px #0ff,
+      0 0 20px #0ff,
+      0 0 40px #0ff,
+      0 0 80px #0ff;
+    margin-bottom: 40px;
+  }
+
+  /* Quote styling in Arial with white glow */
+  #quote {
+    font-family: Arial, sans-serif;
+    font-style: bold;
+    font-size: 1.8rem;
+    max-width: 700px;
+    margin: 0 auto 60px auto;
+    color: #fff;
+    text-shadow:
+      0 0 5px #fff,
+      0 0 10px #fff;
+    min-height: 100px; /* keeps space if quote short */
+  }
+
+  /* About dropdown styles */
+  .about-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 700px;
+  }
+
+  .about-btn {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.25s;
+    user-select: none;
+    margin-bottom: 10px;
+    width: 180px;
+  }
+
+  .about-btn:hover {
+    background: #222;
+  }
+
+  .about-content {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    background: #000;
+    color: #fff;
+    border-radius: 10px;
+    width: 100%;
+    padding: 0 20px;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 1rem;
+    line-height: 1.5;
+    user-select: text;
+  }
+
+  .about-content.open {
+    max-height: 300px;
+    padding: 20px;
+  }
+</style>
+
+<body>
+  <h1 class="glow">Xeno Quote Generator</h1>
+
+  <div id="quote">Loading quote...</div>
+
+  <div class="about-wrapper">
+    <button class="about-btn" id="aboutBtn">About</button>
+    <div class="about-content" id="aboutContent">
+      <p>
+        This is a simple quote generator that shows a random silly quote on each page load.
+        <br>
+        Built with 🖤 entirely in HTML / CSS / JavaScript.
+        <br><br>
+        Refresh the page to get a new quote!
+      </p>
+    </div>
+  </div>
+
+  <script>
+   const quotes = [
+    "i microwaved my spoon because it was cold",
+    "i thought bluetooth worked better in the freezer",
+    "i charged my phone in the oven to make it faster",
+    "i washed my laptop to clean the cookies",
+    "i asked siri where siri lives",
+    "i turned up the brightness to find the sun",
+    "i put my ps5 in rice after it crashed",
+    "i googled google to open google",
+    "i logged out to save storage",
+    "i watered my keyboard so the keys grow",
+    "i downloaded more ram from a sketchy site",
+    "i opened the window to let the wifi in",
+    "i flipped my phone upside down to charge faster",
+    "i tried to fax a sandwich",
+    "i yelled at my smart fridge and it unplugged itself",
+    "i thought html was a sandwich",
+    "i tried to delete the recycle bin",
+    "i thought 5g was 5 grams",
+    "i tried to copy paste on paper",
+    "i rebooted my toaster to fix the lag",
+    "i whispered to my mouse to sneak up on files",
+    "i clicked cancel hoping it would fix my life",
+    "i installed windows on my mirror",
+    "i updated my sleep schedule through settings",
+    "i texted myself to see if i was online",
+    "i restarted my brain now it won’t boot",
+    "i subscribed to oxygen so i can breathe premium",
+    "i reset my fridge to factory settings",
+    "i downloaded air from the cloud",
+    "i tried to screenshot my dreams",
+    "i keep reloading the fridge hoping new food appears",
+    "i plugged my usb in both ways and it disappeared",
+    "i clicked 'accept cookies' and ate my phone",
+    "i put my password as 'incorrect' so i never forget",
+    "i deleted system32 to boost fps",
+    "i printed a meme to share it offline",
+    "i tried to use incognito mode to hide from chores",
+    "i yelled 'undo' after spilling water",
+    "i thought the cloud was in the sky",
+    "i tried to airplay my homework to the teacher",
+    "i downloaded a ladder to climb the ranks",
+    "i opened task manager to fire my responsibilities",
+    "i asked alexa to do my taxes",
+    "i took a selfie with the calculator app",
+    "i enabled airplane mode and started flying",
+    "i named my wifi 'why-fi' and forgot the password",
+    "i watched a tutorial to breathe manually",
+    "i paused my alarm so it won’t wake me",
+    "i wear glasses to improve screen resolution",
+    "i asked chatgpt to do my push-ups",
+    "nothing ever loads when you need it most",
+    "i laughed so hard i remembered i’m alone",
+    "every refresh brings me no closer to purpose",
+    "my headphones work better when i pretend someone’s talking to me",
+    "i opened the fridge but it wasn’t hunger",
+    "my wifi is fast, but my life is buffering",
+    "i keep updating but i’m still outdated",
+    "i blinked and missed everything",
+    "even autocorrect gave up on me",
+    "i typed lol but i felt nothing",
+    "i eat cocounts"
+];
+    function showRandomQuote() {
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      document.getElementById("quote").textContent = quotes[randomIndex];
+    }
+
+    // Show a random quote on page load
+    window.onload = showRandomQuote;
+
+    // About toggle functionality
+    const aboutBtn = document.getElementById("aboutBtn");
+    const aboutContent = document.getElementById("aboutContent");
+
+    aboutBtn.addEventListener("click", () => {
+      aboutContent.classList.toggle("open");
+    });
+  </script>
+</body>
+</html>
