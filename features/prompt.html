@@ -1,147 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Xeno v2.0 - Command Prompt</title>
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: monospace;
-      padding: 20px;
-    }
-    #console {
-      white-space: pre-wrap;
-    }
-    #inputLine {
-      display: inline;
-    }
-    input {
-      background: black;
-      color: white;
-      border: none;
-      outline: none;
-      font-family: monospace;
-      font-size: 1em;
-      width: 80%;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Xeno Command Prompt</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: monospace, monospace;
+    margin: 0;
+    padding: 10px;
+    user-select: none;
+  }
+  #prompt {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  #output {
+    white-space: pre-wrap;
+    min-height: 200px;
+    margin-bottom: 10px;
+  }
+  #inputLine {
+    display: flex;
+  }
+  #inputPrompt {
+    flex-shrink: 0;
+  }
+  #commandInput {
+    flex-grow: 1;
+    background: black;
+    color: white;
+    border: none;
+    outline: none;
+    font-family: monospace, monospace;
+    font-size: 16px;
+  }
+  .image-button {
+    display: block;
+    margin: 10px auto;
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+  }
+  /* Color themes */
+  .color-black { background-color: black; color: white; }
+  .color-red { background-color: #8B0000; color: white; }
+  .color-green { background-color: #004d00; color: white; }
+  .color-yellow { background-color: #666600; color: black; }
+  .color-blue { background-color: #00008B; color: white; }
+  .color-magenta { background-color: #8B008B; color: white; }
+  .color-cyan { background-color: #008B8B; color: white; }
+  .color-white { background-color: white; color: black; }
+
+  /* Loading screen */
+  #loading-screen {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    color: white;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace;
+    font-size: 24px;
+  }
+  #loading-screen img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+  }
+</style>
 </head>
-<body>
-  <div id="console">Xeno Command Prompt [Version 7] Type "help" for a list of commands.</div>
-  <div id="inputLine">> <input type="text" id="commandInput" autofocus /></div>
+<body class="color-black">
+<div id="prompt">
+  <div id="output"></div>
+  <div id="inputLine">
+    <span id="inputPrompt">&gt;</span>
+    <input type="text" id="commandInput" autofocus autocomplete="off" />
+  </div>
+</div>
 
-  <script>
-    const commandInput = document.getElementById('commandInput');
-    const consoleDiv = document.getElementById('console');
-    let commandHistory = [];
-    let historyIndex = -1;
+<!-- Loading screen -->
+<div id="loading-screen">
+  <img id="loading-gif" src="your-spinner.gif" alt="Loading..." />
+  Installing...
+</div>
 
-    function printOutput(text) {
-      consoleDiv.innerText += text + '\n';
-      window.scrollTo(0, document.body.scrollHeight);
+<script>
+  const output = document.getElementById('output');
+  const input = document.getElementById('commandInput');
+  const body = document.body;
+
+  function printToPrompt(text) {
+    output.textContent += text + '\n';
+    output.scrollTop = output.scrollHeight;
+  }
+
+  // Keep track of previous commands
+  let history = [];
+  let historyIndex = -1;
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const command = input.value.trim();
+      if (!command) return;
+      printToPrompt('> ' + command);
+      processCommand(command.toLowerCase());
+      history.push(command);
+      historyIndex = history.length;
+      input.value = '';
+    } else if (e.key === 'ArrowUp') {
+      if (historyIndex > 0) {
+        historyIndex--;
+        input.value = history[historyIndex];
+      }
+      e.preventDefault();
+    } else if (e.key === 'ArrowDown') {
+      if (historyIndex < history.length - 1) {
+        historyIndex++;
+        input.value = history[historyIndex];
+      } else {
+        historyIndex = history.length;
+        input.value = '';
+      }
+      e.preventDefault();
     }
+  });
 
-    const commands = {
-      "make cookie": () => {
-        if (!document.getElementById("cookieBtn")) {
-          const btn = document.createElement("button");
-          btn.id = "cookieBtn";
-          btn.innerText = "🍪 Cookie";
-          btn.style.position = "fixed";
-          btn.style.top = "50%";
-          btn.style.left = "50%";
-          btn.style.transform = "translate(-50%, -50%)";
-          btn.onclick = () => alert("Yum!");
-          document.body.appendChild(btn);
-          printOutput("Cookie created.");
-        } else {
-          printOutput("Cookie already exists.");
-        }
-      },
-      "delete cookie": () => {
-        const btn = document.getElementById("cookieBtn");
-        if (btn) {
-          btn.remove();
-          printOutput("Cookie deleted.");
-        } else {
-          printOutput("No cookie to delete.");
-        }
-      },
-      "info": () => {
-        printOutput("Xeno v2.0.13.521");
-      },
-      "reset": () => {
-        location.reload();
-      },
-      "clear": () => {
-        consoleDiv.innerText = "";
-      },
-      "help": () => {
-        printOutput(`Available commands:
-  make cookie - Create a cookie button
-  delete cookie - Delete the cookie button
-  info - Show version info
-  reset - Reload the page
-  clear - Clear the console
-  color [color] - Change console text color
-  colorHelp - List available colors`);
-      },
-      "colorHelp": () => {
-        printOutput(`Available colors:
-  red, green, blue, yellow, cyan, magenta, white, black`);
-      },
-      "color": (args) => {
-        const color = args[1];
-        const validColors = ["red", "green", "blue", "yellow", "cyan", "magenta", "white", "black"];
-        if (validColors.includes(color)) {
-          document.body.style.color = color;
-          commandInput.style.color = color;
-          printOutput(`Color changed to ${color}.`);
-        } else {
-          printOutput("Invalid color. Type 'colorHelp' for a list of colors.");
-        }
-      },
-      // 🔒 secret commandz
-      "loadOS": () => {
-        printOutput("Loading operating system... this may take a bit depending on memory");
-        setTimeout(() => {
-          window.location.href = "/os.html";
-        }, 1000);
+  let cookieButton = null;
+
+  function processCommand(command) {
+    if (command === 'make cookie') {
+      if (!cookieButton) {
+        cookieButton = document.createElement('img');
+        cookieButton.src = 'https://i.imgur.com/JfPpwOA.png'; // sample cookie image
+        cookieButton.className = 'image-button';
+        cookieButton.alt = 'Cookie Button';
+        cookieButton.title = 'Click me!';
+        cookieButton.onclick = () => alert('You clicked the cookie!');
+        document.body.appendChild(cookieButton);
+        printToPrompt('Cookie button created!');
+      } else {
+        printToPrompt('Cookie button already exists.');
       }
-    };
-
-    commandInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const input = commandInput.value.trim();
-        consoleDiv.innerText += "> " + input + "\n";
-        commandHistory.unshift(input);
-        historyIndex = -1;
-
-        const args = input.split(" ");
-        const command = args[0];
-        if (commands[command]) {
-          commands[command](args);
-        } else {
-          printOutput(`'${input}' is not recognized as a command.`);
-        }
-
-        commandInput.value = "";
-      } else if (e.key === "ArrowUp") {
-        if (commandHistory.length > 0 && historyIndex < commandHistory.length - 1) {
-          historyIndex++;
-          commandInput.value = commandHistory[historyIndex];
-        }
-      } else if (e.key === "ArrowDown") {
-        if (historyIndex > 0) {
-          historyIndex--;
-          commandInput.value = commandHistory[historyIndex];
-        } else {
-          commandInput.value = "";
-          historyIndex = -1;
-        }
+    } else if (command === 'delete cookie') {
+      if (cookieButton) {
+        cookieButton.remove();
+        cookieButton = null;
+        printToPrompt('Cookie button deleted.');
+      } else {
+        printToPrompt('No cookie button to delete.');
       }
-    });
-  </script>
+    } else if (command === 'info') {
+      printToPrompt('Xeno v2.0.13.521');
+    } else if (command === 'reset') {
+      location.reload();
+    } else if (command === 'clear') {
+      output.textContent = '';
+    } else if (command === 'help') {
+      printToPrompt(`Available commands:
+make cookie - Creates a clickable cookie image button
+delete cookie - Deletes the cookie button
+info - Shows current Xeno version
+reset - Reloads the page
+clear - Clears the console output
+color [colorname] - Changes the color theme (try 'colorHelp' for options)
+colorHelp - Shows all available color themes
+`);
+    } else if (command.startsWith('color ')) {
+      const colorName = command.split(' ')[1];
+      const colors = ['black','red','green','yellow','blue','magenta','cyan','white'];
+      if (colors.includes(colorName)) {
+        // remove existing color classes
+        colors.forEach(c => body.classList.remove('color-' + c));
+        body.classList.add('color-' + colorName);
+        printToPrompt(`Color changed to ${colorName}`);
+      } else {
+        printToPrompt(`Unknown color: ${colorName}. Try 'colorHelp'`);
+      }
+    } else if (command === 'colorhelp') {
+      printToPrompt(`Available colors:
+black, red, green, yellow, blue, magenta, cyan, white`);
+    } else if (command === 'loados') {
+      const loadingScreen = document.getElementById('loading-screen');
+      loadingScreen.style.display = 'flex';
+      printToPrompt('Loading operating system...');
+      setTimeout(() => {
+        window.location.href = 'os.html';
+      }, 20000);
+    } else {
+      printToPrompt(`Unknown command: ${command}. Try 'help'`);
+    }
+  }
+</script>
 </body>
 </html>
