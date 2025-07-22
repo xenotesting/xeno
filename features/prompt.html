@@ -1,73 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Xeno v2.0 - Command Prompt</title>
   <style>
     body {
-      margin: 0;
       background-color: black;
       color: lime;
       font-family: monospace;
-    }
-
-    #terminal {
       padding: 10px;
+      margin: 0;
+      overflow-x: hidden;
     }
-
-    #terminal-input {
-      width: 100%;
+    .line {
+      margin: 5px 0;
+    }
+    input {
       background: black;
       color: lime;
       border: none;
       outline: none;
       font-family: monospace;
+      font-size: 1em;
+      width: 90%;
     }
-
-    #cookie {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 2rem;
-      z-index: 9998;
+    #output {
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <div id="terminal">
-    <span>&gt;</span> <input id="terminal-input" autocomplete="off" placeholder="Type a command..." />
+  <div id="output"></div>
+  <div class="line">
+    <span>&gt;</span> <input type="text" id="input" autofocus autocomplete="off" />
   </div>
 
   <script>
-    const input = document.getElementById('terminal-input');
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    let history = [];
+    let historyIndex = -1;
 
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        const command = input.value.trim().toLowerCase();
-        input.value = '';
-        handleCommand(command);
-      }
-    });
+    function appendLine(text) {
+      const line = document.createElement('div');
+      line.className = 'line';
+      line.textContent = text;
+      output.appendChild(line);
+      window.scrollTo(0, document.body.scrollHeight);
+    }
 
-    function handleCommand(command) {
-      switch (command) {
-        case 'make cookie':
-          if (!document.getElementById('cookie')) {
+    function handleCommand(cmd) {
+      const args = cmd.trim().split(' ');
+      const baseCmd = args[0];
+
+      switch (baseCmd) {
+        case 'make':
+          if (args[1] === 'cookie') {
             const btn = document.createElement('button');
-            btn.innerText = '🍪';
-            btn.id = 'cookie';
-            btn.onclick = () => alert('You clicked the cookie!');
+            btn.textContent = '🍪 Cookie';
+            btn.id = 'cookieBtn';
+            btn.style.position = 'absolute';
+            btn.style.left = '50%';
+            btn.style.top = '50%';
+            btn.style.transform = 'translate(-50%, -50%)';
             document.body.appendChild(btn);
+            appendLine("Created a cookie button.");
           }
           break;
 
-        case 'delete cookie':
-          const cookie = document.getElementById('cookie');
-          if (cookie) cookie.remove();
+        case 'delete':
+          if (args[1] === 'cookie') {
+            const btn = document.getElementById('cookieBtn');
+            if (btn) {
+              btn.remove();
+              appendLine("Cookie button deleted.");
+            } else {
+              appendLine("No cookie to delete.");
+            }
+          }
           break;
 
         case 'info':
-          alert('Xeno v2.0.13.521');
+          appendLine("Xeno v2.0.13.521");
           break;
 
         case 'reload':
@@ -75,9 +90,33 @@
           break;
 
         default:
-          alert(`Unknown command: ${command}`);
+          appendLine(`'${cmd}' is not recognized as a command.`);
       }
     }
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const cmd = input.value;
+        appendLine('> ' + cmd);
+        handleCommand(cmd);
+        history.push(cmd);
+        historyIndex = history.length;
+        input.value = '';
+      } else if (e.key === 'ArrowUp') {
+        if (historyIndex > 0) {
+          historyIndex--;
+          input.value = history[historyIndex];
+        }
+      } else if (e.key === 'ArrowDown') {
+        if (historyIndex < history.length - 1) {
+          historyIndex++;
+          input.value = history[historyIndex];
+        } else {
+          historyIndex = history.length;
+          input.value = '';
+        }
+      }
+    });
   </script>
 </body>
 </html>
