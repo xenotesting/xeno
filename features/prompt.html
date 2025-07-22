@@ -113,7 +113,7 @@
             "reset – Reloads the page\n" +
             "ver – Prints fake version info\n" +
             "echo [text] – Repeats what you type\n" +
-            "cls – Clears the screen\n" +
+            "clear – Clears the screen\n" +
             "time – Shows the current time\n" +
             "date – Shows today's date\n" +
             "whoami – Displays fake username\n" +
@@ -129,7 +129,7 @@
           appendLine(cmd.slice(5));
           break;
 
-        case 'cls':
+        case 'clear':
           output.innerHTML = '';
           break;
 
