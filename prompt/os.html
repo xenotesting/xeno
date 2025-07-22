@@ -35,6 +35,10 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       display: flex;
       flex-direction: column;
+      resize: both;
+      overflow: auto;
+      min-width: 300px;
+      min-height: 200px;
     }
     .titlebar {
       background-color: #0078d7;
@@ -55,8 +59,12 @@
     }
     .content {
       flex: 1;
-      padding: 0;
       overflow: hidden;
+    }
+    .content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
     #desktop {
       position: absolute;
@@ -87,17 +95,17 @@
 <body>
 
   <div id="desktop">
-    <div class="icon" onclick="openWindow('Calculator', '<iframe src=\'https://ti-84.netlify.app#popup\' width=\'100%\' height=\'100%\' frameborder=\'0\'></iframe>')">
+    <div class="icon" onclick="openWindow('Calculator', '<iframe src=\'https://ti-84.netlify.app#popup\'></iframe>')">
       <img src="https://education.ti.com/-/media/ti/education/images/products/product-details/graphing/84-plus-ce-python/ti-84pcep-hh-python-programming-webstandard-420x420.png?rev=5f5b0190-3e82-401d-ad48-8fc654aea316&la=en-PH&h=350&w=350&hash=1ED121ADA9D55F0B549E68654C5D3092">
       <div>Calculator</div>
     </div>
 
-    <div class="icon" onclick="openWindow('Music Player', '<iframe src=\'/features/player.html\' width=\'100%\' height=\'100%\' frameborder=\'0\'></iframe>')">
+    <div class="icon" onclick="openWindow('Music Player', '<iframe src=\'/features/player.html\'></iframe>')">
       <img src="https://raw.githubusercontent.com/xenotesting/xeno/refs/heads/main/images/xenomusic-favicon.png">
       <div>Music</div>
     </div>
 
-    <div class="icon" onclick="openWindow('Command Prompt', '<iframe src=\'/features/prompt.html\' width=\'100%\' height=\'100%\' frameborder=\'0\'></iframe>')">
+    <div class="icon" onclick="openWindow('Command Prompt', '<iframe src=\'/features/prompt.html\'></iframe>')">
       <img src="https://images.freeimages.com/fic/images/icons/127/sleek_xp_software/300/command_prompt.png">
       <div>Prompt</div>
     </div>
