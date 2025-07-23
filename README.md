@@ -7,7 +7,9 @@ As the year goes by, my school has added the StudentKeeper extension, but it can
 <br><br>
 So welcome to Xeno, my hub used by some people
 <br><br><br>
+
 # Cool shi it has
+
 <br>
 <img width="824" height="187" alt="xeno26-Features" src="https://github.com/user-attachments/assets/39e87d41-b9f2-47d1-8a99-3aac324ab050" />
 Emulators/Simulators, Games (seraph embed), Totally real CmdPrompt, Quote Generator, and much more to be found!
