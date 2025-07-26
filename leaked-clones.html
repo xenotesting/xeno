@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Xeno v2.0 - Emulators/Simulators</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Libre Baskerville', serif;
+      background-color: #000;
+      color: #fff;
+      text-align: center;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    header img {
+      height: 50px;
+    }
+
+    .main-logo {
+      margin-top: 100px;
+    }
+
+    .main-logo img {
+      height: 95px;
+    }
+
+    .description {
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+
+    .sub-description {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: #aaa;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(266px, 1fr));
+      gap: 40px;
+      padding: 60px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      text-align: center;
+    }
+
+    .emulator-button {
+      border: none;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .emulator-button:hover {
+      transform: scale(1.05);
+    }
+
+    .emulator-button img {
+      width: 266px;
+      height: 266px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid #444;
+    }
+
+    .label {
+      margin-top: 12px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .desc {
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+
+    footer {
+      margin-top: 60px;
+      font-size: 0.9rem;
+      color: #777;
+      padding: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="/images/alt-logo.png" alt="Alt Logo">
+  </header>
+
+  <div class="main-logo">
+    <img src="/images/main-logo.png" alt="Main Logo">
+  </div>
+
+  <p class="description">LEAKED XENO CLONES</p>
+  <p class="sub-description">Xeno knockoffs I leaked :D<br>All owners of knockoffs are anonymous because<br><br>everyone will bully them</p>
+
+  <div style="text-align: center; margin-top: 30px;">
+  <a href="/index.html" style="text-decoration: none; font-size: 16px; color: #00f;">Back to Home</a>
+</div>
+  
+  <div class="grid">
+  <div class="card">
+    <button class="emulator-button" onclick="window.open('/leaked-clones/hafnium.html', '_blank')">
+      <img src="/images/haf.png" alt="Hafnium Leaked [May 2025]">
+    </button>
+    <div class="label">Hafnium</div>
+    <div class="desc"><i>version leak may 28 2025</i></div>
+  </div>
+</div>
+
+  
+  <footer>
+    xeno &copy; 2024 - 2025
+  </footer>
+</body>
+</html>
